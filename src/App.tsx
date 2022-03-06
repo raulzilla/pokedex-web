@@ -1,23 +1,20 @@
-import { Fragment, useState } from 'react';
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import axios from 'axios';
+import { useEffect, useState, useRef } from 'react';
+import { Box, Paper, TextField } from '@mui/material'
+import { api } from './services/api'
 import './App.css'
 
 function App() {
+
   const [ pokemon, setPokemon ] = useState<any>({})
 
-  const Request = () => {
-    axios.get('https://pokeapi.co/api/v2/pokemon/pikachu')
-      .then(res => {
-        const pokemons = res.data;
-        console.log(pokemons)
-        setPokemon({ pokemons });
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-  }
+  useEffect(() => {
+    api
+    .get('/pokemon/rayquaza')
+    .then(res => setPokemon(res.data))
+    .catch(err => {
+      console.log("Falha na api" + err);
+    })
+  }, [])
 
   return (
     <div className="App">
@@ -33,18 +30,13 @@ function App() {
               },
             }}
           >
-            {/* {pokemon.pokemons.map((pokemons: any) =>
-              <Fragment>
-                <h4>{pokemons.name}</h4>
-              </Fragment> 
-            )} */}
-            <h4>Pikachu</h4>
-            <p>n 25</p>
-            <p>raio</p>
-            <p>Fraquezas</p>
+            <h4>{pokemon?.name}</h4>
+            <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id}.png`} />
+            <p>
+              <TextField onChange={(e) => console.log(e.target.value)} label="Pokemon" />
+            </p>
           </Box>
         </Paper>
-        <button onClick={Request}>test</button>
       </header>
     </div>
   );
