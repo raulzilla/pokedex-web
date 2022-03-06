@@ -1,15 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
-import { Box, Paper, TextField } from '@mui/material'
+import { useEffect, useState } from 'react';
+import { Box, Paper, TextField, Button, Snackbar, Alert } from '@mui/material'
 import { api } from './services/api'
 import './App.css'
 
 function App() {
 
   const [ pokemon, setPokemon ] = useState<any>({})
+  const [ initialPokemon, setInitialPokemon ] = useState('bulbasaur')
+  const [ err, setErr ] = useState(false)
 
   useEffect(() => {
     api
-    .get('/pokemon/rayquaza')
+    .get(`/pokemon/${initialPokemon}`)
     .then(res => setPokemon(res.data))
     .catch(err => {
       console.log("Falha na api" + err);
@@ -32,9 +34,24 @@ function App() {
           >
             <h4>{pokemon?.name}</h4>
             <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id}.png`} />
-            <p>
-              <TextField onChange={(e) => console.log(e.target.value)} label="Pokemon" />
-            </p>
+            <div>
+              <TextField onChange={e => setInitialPokemon(e.target.value)} label="Pokemon" focused />
+            </div>
+            <br />
+            <Button 
+              onClick={() => {
+                api
+                .get(`/pokemon/${initialPokemon.toLowerCase()}`)
+                .then(res => setPokemon(res.data))
+                .catch(() => {
+                  setErr(err === true)
+                })
+              }}
+              variant="outlined"  
+              color="success"
+            >
+              Enviar
+            </Button>
           </Box>
         </Paper>
       </header>
