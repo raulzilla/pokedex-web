@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Paper, TextField, Button, Snackbar, Alert } from '@mui/material'
+import { Box, Paper, TextField, Button } from '@mui/material'
 import { api } from './services/api'
 import './App.css'
 
@@ -9,46 +9,43 @@ function App() {
   const [ initialPokemon, setInitialPokemon ] = useState('bulbasaur')
   const [ err, setErr ] = useState(false)
 
-  useEffect(() => {
+  const request = () => {
     api
-    .get(`/pokemon/${initialPokemon}`)
-    .then(res => setPokemon(res.data))
-    .catch(err => {
-      console.log("Falha na api" + err);
+    .get(`/pokemon/${initialPokemon.toLowerCase()}`)
+    .then(res => {
+      setPokemon(res.data)
+      console.log(res.data)
     })
+    .catch(() => {
+      setErr(err === true)
+    })
+  }
+
+  useEffect(() => {
+    request()
   }, [])
 
   return (
     <div className="App">
       <header className="App-header">
-        <Paper elevation={3}>
+        <Paper elevation={5}>
           <Box
             sx={{
               width: 400,
               height: 400,
-              backgroundColor: 'white',
-              '&:hover': {
-                opacity: [0.9, 0.8, 0.7],
-              },
+              backgroundColor: 'white'
             }}
           >
-            <h4>{pokemon?.name}</h4>
-            <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id}.png`} />
+            {!pokemon?.name && <h4>Bulbasaur</h4>}
+            <h4 className='text'>{pokemon?.name}</h4>
+            <img className='img' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id ? pokemon?.id : 1}.png`} />
             <div>
-              <TextField onChange={e => setInitialPokemon(e.target.value)} label="Pokemon" focused />
+              <TextField color="secondary" onChange={e => setInitialPokemon(e.target.value)} label="Pokemon" focused />
             </div>
             <br />
-            <Button 
-              onClick={() => {
-                api
-                .get(`/pokemon/${initialPokemon.toLowerCase()}`)
-                .then(res => setPokemon(res.data))
-                .catch(() => {
-                  setErr(err === true)
-                })
-              }}
-              variant="outlined"  
-              color="success"
+            <Button
+              color="secondary"
+              onClick={() => {request()}}
             >
               Enviar
             </Button>
